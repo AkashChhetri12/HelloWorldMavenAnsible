@@ -1,0 +1,23 @@
+---
+- hosts: all
+  vars:
+     version: "{{ version_tag }}"
+  tasks:
+  - name: stop if we have old docker container
+    command: docker stop HelloWorldContainer
+    ignore_errors: yes
+    tags:
+    - stop_container
+
+  - name: remove killed docker container
+    command: docker rm HelloWorldContainer
+    ignore_errors: yes
+    tags:
+    - delete_container
+
+  - debug:
+      var: version
+    when: version is defined and debug is defined
+
+  - name: creating docker container
+    command: docker run -d -p 8050:8050 --name HelloWorldContainer akashchhetri/helloworlddeploy:"{{ version }}"
